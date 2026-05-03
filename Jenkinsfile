@@ -22,7 +22,11 @@ pipeline {
         }
         stage('cleanup') {
             steps {
-                sh 'docker system prune -a --volumes --force --filter "label=campaign-demo-server"'
+                sh '''
+                    docker stop campaign-demo-server || true
+                    docker rm campaign-demo-server || true
+                    docker rmi dtellinf/campaign-demo:v1 || true           
+                '''
             }
         }
         stage('build image') {
