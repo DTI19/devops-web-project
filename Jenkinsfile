@@ -1,7 +1,7 @@
 pipeline {
     agent {
         node {
-        label 'dockerhost-build-server'
+            label 'dockerhost-build-server'
         }
     }
     tools {
@@ -14,26 +14,26 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
-        stage('Copying jar file') {
+        stage('Copying war file') {
             steps {
                 echo 'Copying war file..'
-                sh 'mv target/*.jar .'
+                sh 'mv target/*.war .'  // ← *.jar → *.war
             }
         }
         stage('cleanup') {
-          steps {
-            sh 'docker system prune -a --volumes --force --filter "label=campaign-demo-server"'
-          }
+            steps {
+                sh 'docker system prune -a --volumes --force --filter "label=campaign-demo-server"'
+            }
         }
         stage('build image') {
-          steps {
-            sh 'docker build -t dtellinf/campaign-demo:v1 --label campaign-demo-server .'
-          }
+            steps {
+                sh 'docker build -t dtellinf/campaign-demo:v1 --label campaign-demo-server .'
+            }
         }
         stage('run container') {
-          steps {
-            sh 'docker run -d --name campaign-demo-server --label campaign-demo-server -p 5000:5000 dtellinf/campaign-demo:v1'
-          }
+            steps {
+                sh 'docker run -d --name campaign-demo-server --label campaign-demo-server -p 5000:5000 dtellinf/campaign-demo:v1'
+            }
         }
     }
-  }
+}
